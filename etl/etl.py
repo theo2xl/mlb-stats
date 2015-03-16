@@ -4,7 +4,6 @@
 # parses and transforms to objects
 # loads to a relational database
 #
-# TODO: Create DB via migrations
 import requests
 import model
 import seed
@@ -101,7 +100,7 @@ def load_stats(year):
         slg = tb / float(ab)
         ops = obp + slg
         go_ao = go / float(ao)
-        woba = (0.690*bb + 0.722*hbp + 0.888*s + 1.271*dbl + 1.616*tpl + 2.101*hr) / (ab + bb - ibb + sf + hbp)
+        woba = (0.689*(bb-ibb) + 0.722*hbp + 0.892*s + 1.283*dbl + 1.635*tpl + 2.135*hr) / (ab + bb - ibb + sf + hbp)
 
         new_batting_stats = model.StatsYearBatting(player_id = player_id,
                                                    year = year,
