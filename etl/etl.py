@@ -6,8 +6,9 @@
 #
 import requests
 import model
-import seed
 import schema
+import seed
+import stats
 
 from sqlalchemy import and_, create_engine, orm
 from bs4 import BeautifulSoup
@@ -27,18 +28,12 @@ def load_source():
     session.add(new_source)
     session.commit()
 
-def load_player(source_id):
+def load_player():
     for row in get_2014_batting_leaders():
         player_data = row.find_all('td')
 
-        player_team_id_query = session.query(model.Team.id).filter(model.Team.abbr == player_data[2].string)
-        for team in player_team_id_query:
-            team_id = team[0]
-
-        player_pos_id_query = session.query(model.Position.id).filter(model.Position.abbr == player_data[5].string)
-        for pos in player_pos_id_query:
-            pos_id = pos[0]
-
+        team_id = get_player_team_id(player_data[2].string)
+        position_id = get_player_position_id(player_data[5].string)
         name = player_data[1].a.string.split(',')
         first_name = name[1].strip()
         last_name = name[0]
@@ -46,15 +41,19 @@ def load_player(source_id):
         new_player = model.Player(last_name = last_name,
                                   first_name = first_name,
                                   team_id = team_id,
-                                  position_id = pos_id)
+                                  position_id = position_id)
 
         session.add(new_player)
         session.commit()
 
-        player_id_query = session.query(model.Player.id).filter(and_(model.Player.last_name == last_name,
-                                                                     model.Player.first_name == first_name))
-        for pid in player_id_query:
-            player_id = pid[0]
+def load_player_source(source_id):
+    for row in get_2014_batting_leaders():
+        player_data = row.find_all('td')
+
+        name = player_data[1].a.string.split(',')
+        first_name = name[1].strip()
+        last_name = name[0]
+        player_id = get_player_source_id(first_name, last_name)
 
         new_player_source = model.PlayerSource(player_source_id = int(player_data[4].string),
                                                source_id = source_id,
@@ -66,10 +65,7 @@ def load_stats(year):
     for row in get_2014_batting_leaders():
         player_data = row.find_all('td')
 
-        player_source_id = int(player_data[4].string)
-        player_id_query = session.query(model.PlayerSource.player_id).filter(model.PlayerSource.player_source_id == player_source_id)
-        for pid in player_id_query:
-            player_id = pid[0]
+        player_id = get_player_id(int(player_data[4].string))
 
         g = int(player_data[6].string)
         pa = int(player_data[33].string)
@@ -79,7 +75,6 @@ def load_stats(year):
         dbl = int(player_data[10].string)
         tpl = int(player_data[11].string)
         hr = int(player_data[12].string)
-        s = h - dbl - tpl - hr
         rbi = int(player_data[13].string)
         bb = int(player_data[14].string)
         ibb = int(player_data[22].string)
@@ -90,51 +85,29 @@ def load_stats(year):
         np = int(player_data[32].string)
         sac = int(player_data[24].string)
         sf = int(player_data[25].string)
-        tb = s + dbl + tpl + hr
         gdp = int(player_data[28].string)
         go = int(player_data[29].string)
         ao = int(player_data[30].string)
         xbh = int(player_data[27].string)
-        avg = h / float(ab)
-        obp = (h + bb + hbp) / float(ab + bb + sf + hbp)
-        slg = tb / float(ab)
-        ops = obp + slg
-        go_ao = go / float(ao)
-        woba = (0.689*(bb-ibb) + 0.722*hbp + 0.892*s + 1.283*dbl + 1.635*tpl + 2.135*hr) / (ab + bb - ibb + sf + hbp)
+        s = h - dbl - tpl - hr
+        tb = stats.tb(s, dbl, tpl, hr)
+        avg = stats.avg(h, ab)
+        obp = stats.obp(h, bb, hbp, ab, sf)
+        slg = stats.slg(tb, ab)
+        ops = stats.ops(h, bb, hbp, ab, tb, sf)
+        go_ao = stats.go_ao(go, ao)
+        woba = stats.woba_2014(bb, ibb, hbp, s, dbl, tpl, hr, ab, sf)
 
-        new_batting_stats = model.StatsYearBatting(player_id = player_id,
-                                                   year = year,
-                                                   g = g,
-                                                   pa = pa,
-                                                   ab = ab,
-                                                   r = r,
-                                                   h = h,
-                                                   s = s,
-                                                   dbl = dbl,
-                                                   tpl = tpl,
-                                                   hr = hr,
-                                                   rbi = rbi,
-                                                   bb = bb,
-                                                   ibb = ibb,
-                                                   hbp = hbp,
-                                                   so = so,
-                                                   sb = sb,
-                                                   cs = cs,
-                                                   np = np,
-                                                   sac = sac,
-                                                   sf = sf,
-                                                   tb = tb,
-                                                   gdp = gdp,
-                                                   go = go,
-                                                   ao = ao,
-                                                   xbh = xbh,
-                                                   avg = avg,
-                                                   obp = obp,
-                                                   slg = slg,
-                                                   ops = ops,
-                                                   go_ao = go_ao,
-                                                   woba = woba)
-        session.add(new_batting_stats)
+        nbs = model.StatsYearBatting(player_id = player_id, year = year, g = g,
+                                     pa = pa, ab = ab, r = r, h = h, s = s,
+                                     dbl = dbl, tpl = tpl, hr = hr, rbi = rbi,
+                                     bb = bb, ibb = ibb, hbp = hbp, so = so,
+                                     sb = sb, cs = cs, np = np, sac = sac,
+                                     sf = sf, tb = tb, gdp = gdp, go = go,
+                                     ao = ao, xbh = xbh, avg = avg, obp = obp,
+                                     slg = slg, ops = ops, go_ao = go_ao,
+                                     woba = woba)
+        session.add(nbs)
 
     session.commit()
 
@@ -149,6 +122,31 @@ def print_woba_leaders():
             l = p.last_name
         woba = w.woba
         print("{} {} {} {:.4f}".format(str(i),f,l,woba))
+
+def get_player_id(player_source_id):
+    player_id_query = session.query(model.PlayerSource.player_id).filter(model.PlayerSource.player_source_id == player_source_id)
+    for pid in player_id_query:
+        player_id = pid[0]
+    return player_id
+
+def get_player_team_id(team_abbr):
+    player_team_id_query = session.query(model.Team.id).filter(model.Team.abbr == team_abbr)
+    for team in player_team_id_query:
+        team_id = team[0]
+    return team_id
+
+def get_player_position_id(position_abbr):
+    player_pos_id_query = session.query(model.Position.id).filter(model.Position.abbr == position_abbr)
+    for pos in player_pos_id_query:
+        pos_id = pos[0]
+    return pos_id
+
+def get_player_source_id(first_name, last_name):
+    player_id_query = session.query(model.Player.id).filter(and_(model.Player.last_name == last_name,
+                                                                 model.Player.first_name == first_name))
+    for pid in player_id_query:
+        player_id = pid[0]
+    return player_id
 
 # Create an engine and create all the tables we need
 engine = create_engine('sqlite:///:memory:', echo=False)
@@ -166,7 +164,8 @@ seed.position(session)
 
 # load db
 load_source()
-load_player(1)
+load_player()
+load_player_source(1)
 load_stats(2014)
 
 # output solution

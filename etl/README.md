@@ -10,7 +10,6 @@ The code currently works on a sqlite in memory db.
 * Error Handling
 * Tests
 * Refactor source loading to be re-usable for other sources
-* Pull mlb related math formulas into their own class
 * Put data into dictionaries when possible
 * Proper class mapping, currently foreign keys exist, but I would like to be able to do things like see a player's last name directly from a call to the stats table.
 * General organization and cleanup
