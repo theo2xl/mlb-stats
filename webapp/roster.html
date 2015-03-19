@@ -15,6 +15,12 @@
         font-family: 'Arimo', sans-serif;
         font-weight: 400;
       }
+      input {
+        display: block;
+        height: 60px;
+        width: 80%;
+        margin-left: 10px;
+      }
       .player-container {
         padding-bottom: 6px;
       }
@@ -51,11 +57,37 @@
       }
     </style>
     <script>
-      var rosterApp = angular.module('rosterApp', []);
+      var rosterApp = angular.module('rosterApp', ['storageService']);
+      var storageService = angular.module('storageService', []);
 
-      rosterApp.controller('RosterCtrl', function ($scope) {
-        $scope.players = rosterJSON;
+      storageService.factory('getLocalStorage', function() {
+        var noteList = {};
+
+        return {
+            list: noteList,
+            updateNotes: function (notesArr) {
+              if (window.localStorage && notesArr) {
+                  localStorage.setItem("notes", angular.toJson(notesArr));
+              }
+              noteList = notesArr;
+            },
+            getNotes: function () {
+              noteList = angular.fromJson(localStorage.getItem("notes"));
+              return noteList ? noteList : [];
+            }
+        };
       });
+
+      rosterApp.controller('RosterCtrl', ['$scope', 'getLocalStorage', function ($scope, getLocalStorage) {
+        $scope.players = rosterJSON;
+
+        $scope.notes = getLocalStorage.getNotes();
+        $scope.addNote = function(player_id) {
+            $scope.notes.push({'id': player_id, 'note': $scope.newNote});
+            getLocalStorage.updateNotes($scope.notes);
+            $scope.newNote = '';
+        };
+      }]);
 
       rosterApp.filter('feetInchFilter', function() {
         return function(inches) {
@@ -781,11 +813,19 @@
             </div>
             <div class="col-md-6 notes">
               <div class="row">
-                <span class="col-md-offset-1">Notes</span>
-                <span><a href="#">Save</a>
+
               </div>
               <div class="row">
-                <span class="col-md-offset-1">This is where notes go</span>
+                <form name="frm" ng-submit="addNote(player.player_id_mlbam)">
+                  <span class="col-md-offset-1">Notes<button ng-disabled="frm.$invalid">Save</button></span>
+                  <input type="text-field" name="note" ng-model="newNote" value=newNote required>
+                </form>
+                <div ng-repeat="note in notes">
+                  <div ng-switch on="note.id">
+                    <span ng-switch-when="player.player_id_mlbam">boom</span>
+                    <span ng-switch-default>{{player.player_id_mlbam}} | {{note.id}}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
