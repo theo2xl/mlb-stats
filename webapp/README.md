@@ -1,5 +1,3 @@
-https://spring.io/guides/gs/consuming-rest-angularjs/
-
 ## JavaScript/UI/UX Coding Exercise
 
 For this exercise you will be developing a mini web application for viewing the Cubs MLB
