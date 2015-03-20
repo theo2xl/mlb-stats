@@ -15,12 +15,6 @@
         font-family: 'Arimo', sans-serif;
         font-weight: 400;
       }
-      input {
-        display: block;
-        height: 60px;
-        width: 80%;
-        margin-left: 10px;
-      }
       .player-container {
         padding-bottom: 6px;
       }
@@ -57,37 +51,24 @@
       }
     </style>
     <script>
-      var rosterApp = angular.module('rosterApp', ['storageService']);
-      var storageService = angular.module('storageService', []);
+      var rosterApp = angular.module('rosterApp', []);
 
-      storageService.factory('getLocalStorage', function() {
-        var noteList = {};
-
-        return {
-            list: noteList,
-            updateNotes: function (notesArr) {
-              if (window.localStorage && notesArr) {
-                  localStorage.setItem("notes", angular.toJson(notesArr));
-              }
-              noteList = notesArr;
-            },
-            getNotes: function () {
-              noteList = angular.fromJson(localStorage.getItem("notes"));
-              return noteList ? noteList : [];
-            }
-        };
-      });
-
-      rosterApp.controller('RosterCtrl', ['$scope', 'getLocalStorage', function ($scope, getLocalStorage) {
+      rosterApp.controller('RosterCtrl', function($scope) {
         $scope.players = rosterJSON;
 
-        $scope.notes = getLocalStorage.getNotes();
         $scope.addNote = function(player_id) {
-            $scope.notes.push({'id': player_id, 'note': $scope.newNote});
-            getLocalStorage.updateNotes($scope.notes);
-            $scope.newNote = '';
+          var note_id = ''.concat('notes_',player_id);
+          var note = document.getElementById(note_id).value;
+
+          localStorage.setItem(player_id, note);
         };
-      }]);
+
+        $scope.getNote = function(player_id) {
+          localStorage.getItem(player_id);
+        };
+
+        $scope.orderProp = 'lastname';
+      });
 
       rosterApp.filter('feetInchFilter', function() {
         return function(inches) {
@@ -104,6 +85,24 @@
           var age = new Date(age);
           return Math.abs(age.getUTCFullYear() - 1970);
         };
+      });
+
+      rosterApp.factory('utils', function() {
+        var setNotes = function(player_id) {
+          try {
+            var note_id = ''.concat('notes_',player_id);
+            var note = document.getElementById(note_id).value;
+            localStorage.setItem(player_id, note);
+          } catch (e) {
+              if (e == QUOTA_EXCEEDED_ERR) {
+                  alert('Your note is too large');
+              }
+          }
+        };
+
+        var getNotes = function(player_id) {
+          return localStorage.getItem(player_id);
+        }
       });
 
       var rosterJSON = [ {
@@ -768,7 +767,7 @@
   </head>
   <body ng-controller="RosterCtrl">
     <div class="container">
-      <div ng-repeat="player in players" id={{player.player_id_mlbam}} class="row col-md-12 player-container">
+      <div ng-repeat="player in players | filter:query | orderBy:orderProp" id={{player.player_id_mlbam}} class="row col-md-12 player-container">
         <div class="row header">
           <div class="col-md-5">
             <a href="#" ng-click="showDetails = ! showDetails">
@@ -813,19 +812,11 @@
             </div>
             <div class="col-md-6 notes">
               <div class="row">
-
-              </div>
-              <div class="row">
                 <form name="frm" ng-submit="addNote(player.player_id_mlbam)">
-                  <span class="col-md-offset-1">Notes<button ng-disabled="frm.$invalid">Save</button></span>
-                  <input type="text-field" name="note" ng-model="newNote" value=newNote required>
+                  <span class="col-md-offset-1">Notes</span>
+                  <input type="text" id="notes_{{player.player_id_mlbam}}" ng-model="notes" ng-init="notes=getNote(player.player_id_mlbam)" value="getNote(player.player_id_mlbam)"></textarea>
+                  <input type=submit></input>
                 </form>
-                <div ng-repeat="note in notes">
-                  <div ng-switch on="note.id">
-                    <span ng-switch-when="player.player_id_mlbam">boom</span>
-                    <span ng-switch-default>{{player.player_id_mlbam}} | {{note.id}}</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
