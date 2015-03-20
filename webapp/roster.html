@@ -15,6 +15,9 @@
         font-family: 'Arimo', sans-serif;
         font-weight: 400;
       }
+      div.odd {
+        background-color: #E6F0FF;
+      }
       .player-container {
         padding-bottom: 6px;
       }
@@ -41,19 +44,33 @@
         color: #FFF;
         font-weight: 400;
       }
+      .input-notes {
+        width: 360px;
+      }
       .player-position {
         text-align: center;
         line-height: 150%;
         margin-top: 1%;
       }
+      .save-notes {
+        margin-top: 4px;
+      }
       .show-details {
-        margin-top:10px;
+        margin-top: 10px;
+      }
+      .title {
+        color: #CC0033;
+        font-size: 48px;
+        font-weight: 700;
       }
     </style>
     <script>
       var rosterApp = angular.module('rosterApp', []);
 
       rosterApp.controller('RosterCtrl', function($scope) {
+        rosterJSON.forEach(function(obj) {
+          obj['notes'] = localStorage.getItem(obj['player_id_mlbam']);
+        });
         $scope.players = rosterJSON;
 
         $scope.addNote = function(player_id) {
@@ -61,10 +78,6 @@
           var note = document.getElementById(note_id).value;
 
           localStorage.setItem(player_id, note);
-        };
-
-        $scope.getNote = function(player_id) {
-          localStorage.getItem(player_id);
         };
 
         $scope.orderProp = 'lastname';
@@ -85,24 +98,6 @@
           var age = new Date(age);
           return Math.abs(age.getUTCFullYear() - 1970);
         };
-      });
-
-      rosterApp.factory('utils', function() {
-        var setNotes = function(player_id) {
-          try {
-            var note_id = ''.concat('notes_',player_id);
-            var note = document.getElementById(note_id).value;
-            localStorage.setItem(player_id, note);
-          } catch (e) {
-              if (e == QUOTA_EXCEEDED_ERR) {
-                  alert('Your note is too large');
-              }
-          }
-        };
-
-        var getNotes = function(player_id) {
-          return localStorage.getItem(player_id);
-        }
       });
 
       var rosterJSON = [ {
@@ -767,8 +762,12 @@
   </head>
   <body ng-controller="RosterCtrl">
     <div class="container">
+      <div class="row title">
+        <span class="col-md-9">Chicago Cubs Roster</span>
+        <span class="col-md-3">2015</span>
+      </div>
       <div ng-repeat="player in players | filter:query | orderBy:orderProp" id={{player.player_id_mlbam}} class="row col-md-12 player-container">
-        <div class="row header">
+        <div class="row header" ng-class-odd="'odd'">
           <div class="col-md-5">
             <a href="#" ng-click="showDetails = ! showDetails">
               <span class="col-md-9">{{player.firstname}}&nbsp;{{player.lastname}}</span>
@@ -812,11 +811,14 @@
             </div>
             <div class="col-md-6 notes">
               <div class="row">
-                <form name="frm" ng-submit="addNote(player.player_id_mlbam)">
-                  <span class="col-md-offset-1">Notes</span>
-                  <input type="text" id="notes_{{player.player_id_mlbam}}" ng-model="notes" ng-init="notes=getNote(player.player_id_mlbam)" value="getNote(player.player_id_mlbam)"></textarea>
-                  <input type=submit></input>
-                </form>
+                <div class="col-md-12 col-md-offset-1 form-group">
+                  <form name="frm" ng-submit="addNote(player.player_id_mlbam)">
+                    <textarea class="row input-notes" type="text-area" id="notes_{{player.player_id_mlbam}}" ng-model="notes" ng-init="notes=player.notes"></textarea>
+                    <div class="row save-notes">
+                      <button type=submit class="btn btn-primary">Save Notes</button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
