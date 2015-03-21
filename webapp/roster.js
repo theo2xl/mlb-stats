@@ -33,7 +33,7 @@ rosterApp.filter('ageFilter', function() {
 // Filter to display experience in years
 rosterApp.filter('expFilter', function() {
   return function(debut) {
-    if (debut > 0) {
+    if (debut) {
       date_debut = new Date(debut);
       var age = Date.now() - date_debut.getTime();
       var age = new Date(age);
