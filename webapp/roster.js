@@ -1,9 +1,60 @@
 var rosterApp = angular.module('rosterApp', []);
 
-rosterApp.controller('RosterCtrl', function ($scope) {
+rosterApp.controller('RosterCtrl', function($scope) {
+  // Include notes in the player model from local storage
+  rosterJSON.forEach(function(obj) {
+    obj['notes'] = localStorage.getItem(obj['player_id_mlbam']);
+  });
+
   $scope.players = rosterJSON;
+
+  // Order roster by lastname
+  $scope.orderProp = 'lastname';
+
+  // Get contents of player's note field and store in local storage
+  $scope.addNote = function(player_id) {
+    var note_id = ''.concat('notes_',player_id);
+    var note = document.getElementById(note_id).value;
+
+    localStorage.setItem(player_id, note);
+  };
 });
 
+// Filter to display age in years
+rosterApp.filter('ageFilter', function() {
+  return function(dob) {
+    date_dob = new Date(dob);
+    var age = Date.now() - date_dob.getTime();
+    var age = new Date(age);
+    return Math.abs(age.getUTCFullYear() - 1970);
+  };
+});
+
+// Filter to display experience in years
+rosterApp.filter('expFilter', function() {
+  return function(debut) {
+    if (debut > 0) {
+      date_debut = new Date(debut);
+      var age = Date.now() - date_debut.getTime();
+      var age = new Date(age);
+      return Math.abs(age.getUTCFullYear() - 1970);
+    } else {
+      return 0;
+    }
+  };
+});
+
+// Convert from inches to feet and inches
+rosterApp.filter('feetInchFilter', function() {
+  return function(inches) {
+    var ft = parseInt(inches / 12);
+    var ft_in = inches % 12;
+    return "".concat(ft,"\'",ft_in,"\"");
+  };
+});
+
+// Needed to store in a variable
+// $http.get call did not work due to cross-origin request
 var rosterJSON = [ {
     "player_id_mlbam" : 573127,
     "lastname" : "Rosscup",
@@ -660,4 +711,4 @@ var rosterJSON = [ {
     "orgname" : "Chicago Cubs",
     "club" : "CHI",
     "clubname" : "Chicago Cubs"
-} ]
+} ];
