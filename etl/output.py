@@ -2,9 +2,12 @@ import model
 
 # outputs top 50 players by wOBA
 # results will look like:
-# 1 A McCutchen 0.4116
-# 2 V Martinez 0.4114
-# 3 J Abreu 0.4113
+# |Rk| Player Name   | wOBA |
+# ---------------------------
+#   1 A McCutchen     0.4116
+#   2 V Martinez      0.4114
+#   3 J Abreu         0.4113
+#   4 G Stanton       0.4031
 def print_woba_leaders(session):
     # fetch stats by wOBA descending
     woba_leaders_query = session.query(model.StatsYearBatting).order_by(model.StatsYearBatting.woba.desc())
