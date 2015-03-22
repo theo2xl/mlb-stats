@@ -5,27 +5,18 @@
 # loads to a relational database
 # prints out rankings based on wOBA
 #
+import load
 import model
+import output
 import schema
 import seed
-import source
 import stats
 
 from sqlalchemy import create_engine, orm
 
-def print_woba_leaders():
-    woba_leaders_query = session.query(model.StatsYearBatting).order_by(model.StatsYearBatting.woba.desc())
-    rk = 0
-    for w in woba_leaders_query:
-        rk+=1
-        player_query = session.query(model.Player).filter(model.Player.id == w.player_id)
-        for p in player_query:
-            f = p.first_name
-            l = p.last_name
-        woba = w.woba
-        print("{} {} {} {:.4f}".format(str(rk),f,l,woba))
-
 # Create an engine and create all the tables we need
+# This is currently done with a sqlite in memory db.
+# Just need to replace line 31 with real db
 engine = create_engine('sqlite:///:memory:', echo=False)
 schema.metadata.bind = engine
 schema.metadata.create_all()
@@ -40,10 +31,10 @@ seed.team(session)
 seed.position(session)
 
 # load db
-source.load_source(session)
-source.load_player(session)
-source.load_player_source(session, 1)
-source.load_stats(session, 2014)
+batting_leaders = load.source(session, 'https://raw.githubusercontent.com/kruser/interview-developer/master/python/leaderboard.html')
+load.player(session, batting_leaders.content)
+load.player_source(session, batting_leaders)
+load.batting_stats(session, 2014, batting_leaders.content)
 
 # output solution
-print_woba_leaders()
+output.print_woba_leaders(session)

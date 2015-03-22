@@ -1,3 +1,4 @@
+# seed db with static teams and positions
 import model
 
 def team(session):

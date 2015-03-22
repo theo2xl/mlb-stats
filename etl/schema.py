@@ -1,8 +1,10 @@
+# Schema for our new database tables
 import datetime
 from sqlalchemy import *
 
 metadata = MetaData()
 
+# used in saving created_at and updated_at datetimes
 def now():
     return datetime.datetime.utcnow()
 

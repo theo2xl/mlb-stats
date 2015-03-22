@@ -54,3 +54,6 @@ docs/_build/
 target/
 
 venv/
+
+# Don't save source content files
+source_*.html

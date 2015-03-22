@@ -3,16 +3,14 @@ The code currently works on a sqlite in memory db.
 
 * Please `pip install` the necessary requirements from [requirements.txt](requirements.txt)
 * Run `python etl.py` you will create, seed and load the in-memory db.
+* A file named `'source_'+self.created_at.strftime("%m-%d-%y_%H:%M:%S")+'.html'` will be created to keep a history of what information was used for the import.
 * You will also receive an output of the top 50 mlb avg leaders ranked by their their 2014 [wOBA](http://www.fangraphs.com/library/offense/woba/)
 
 ## TODO
-* Version control db and information. Save a physical copy of the html and run migrations to easily revert improper loads.
+* Version control db and information. Run migrations to easily revert improper loads.
 * Error Handling
 * Tests
-* Refactor source loading to be re-usable for other sources
-* Put data into dictionaries when possible
 * Proper class mapping, currently foreign keys exist, but I would like to be able to do things like see a player's last name directly from a call to the stats table.
-* General organization and cleanup
 
 # Initial Problem is below
 

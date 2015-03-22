@@ -1,3 +1,7 @@
+import datetime
+import urllib
+
+from bs4 import BeautifulSoup
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -32,6 +36,24 @@ class Source(Base):
     url = Column(String)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+
+    def __init__(self, url):
+        self.url = url
+        self.created_at = datetime.datetime.utcnow()
+        # this could be improved by saving to the same file type as the source url
+        self.filename = 'source_'+self.created_at.strftime("%m-%d-%y_%H:%M:%S")+'.html'
+        self.download()
+        self.content = self.content()
+
+    def download(self):
+        urllib.urlretrieve (self.url, self.filename)
+
+    def content(self):
+        leaderboard_soup = BeautifulSoup(open(self.filename))
+        # this could be abstracted to allow for different source types
+        soup = leaderboard_soup.html.body.table.tbody.find_all('tr')
+
+        return soup
 
 class PlayerSource(Base):
     __tablename__ = 'player_source'
