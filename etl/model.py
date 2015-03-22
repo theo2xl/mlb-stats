@@ -1,9 +1,13 @@
+# Setup database models
+# Use ORM for easier access to objects
+# Could switch to a star schema (data warehouse) model if needed for performance.
 import datetime
 import urllib
 
 from bs4 import BeautifulSoup
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -29,6 +33,9 @@ class Player(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
+    position = relationship("Position", backref="player")
+    team = relationship("Team", backref="player")
+
 class Source(Base):
     __tablename__ = 'source'
 
@@ -37,17 +44,21 @@ class Source(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
 
+    # when creating a new source, save the source and allow content to be accessed.
     def __init__(self, url):
         self.url = url
         self.created_at = datetime.datetime.utcnow()
         # this could be improved by saving to the same file type as the source url
         self.filename = 'source_'+self.created_at.strftime("%m-%d-%y_%H:%M:%S")+'.html'
+        # immediately download file for tracking and more performant access
         self.download()
         self.content = self.content()
 
+    # save file to local machine for history and safer access
     def download(self):
         urllib.urlretrieve (self.url, self.filename)
 
+    # allow access to content of the downloaded file
     def content(self):
         leaderboard_soup = BeautifulSoup(open(self.filename))
         # this could be abstracted to allow for different source types
@@ -111,3 +122,6 @@ class StatsYearBatting(Base):
     woba = Column(Float)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
+
+    # create relationship so when querying stats you have access to player info as well
+    player = relationship("Player", backref="stats_year_batting")

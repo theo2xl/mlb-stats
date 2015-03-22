@@ -10,7 +10,6 @@ The code currently works on a sqlite in memory db.
 * Version control db and information. Run migrations to easily revert improper loads.
 * Error Handling
 * Tests
-* Proper class mapping, currently foreign keys exist, but I would like to be able to do things like see a player's last name directly from a call to the stats table.
 
 # Initial Problem is below
 
