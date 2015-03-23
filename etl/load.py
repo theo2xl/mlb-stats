@@ -2,7 +2,6 @@ import model
 import stats
 
 import datetime
-import urllib
 from sqlalchemy import and_, create_engine, orm
 from bs4 import BeautifulSoup
 
