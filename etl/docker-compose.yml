@@ -1,0 +1,8 @@
+db:
+  image: postgres:9.4
+web:
+  build: .
+  volumes:
+    - .:/etl
+  links:
+    - db
