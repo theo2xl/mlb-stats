@@ -6,6 +6,8 @@ The code currently works on a sqlite in memory db.
 * A file named `'source_'+self.created_at.strftime("%m-%d-%y_%H:%M:%S")+'.html'` will be created to keep a history of what information was used for the import.
 * You will also receive an output of the top 50 mlb avg leaders ranked by their their 2014 [wOBA](http://www.fangraphs.com/library/offense/woba/)
 
+* **Docker**: There is now a [Dockerfile](Dockerfile) which will allow you to run `docker build -t etl .` and `docker run -i etl`.
+
 ## TODO
 * Version control db and information. Run migrations to easily revert improper loads.
 * Error Handling
