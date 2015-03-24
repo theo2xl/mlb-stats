@@ -19,8 +19,8 @@ def print_woba_leaders(session):
     rk = 0
 
     # output header
-    print '|Rk|Tm |Po| Player Name   | wOBA |'
-    print ' --------------------------------'
+    print('|Rk|Tm |Po| Player Name   | wOBA |')
+    print(' --------------------------------')
 
     # output player data
     for w in woba_leaders_query:

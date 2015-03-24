@@ -11,7 +11,11 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-class Team(Base):
+# each table should have a created_at time
+class TimestampMixin(object):
+    created_at = Column(DateTime, default=datetime.datetime.utcnow())
+
+class Team(TimestampMixin, Base):
     __tablename__ = 'team'
 
     id = Column(Integer, primary_key=True)
@@ -19,10 +23,8 @@ class Team(Base):
     name = Column(String)
     abbr = Column(String)
     league = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
-class Player(Base):
+class Player(TimestampMixin, Base):
     __tablename__ = 'player'
 
     id = Column(Integer, primary_key=True)
@@ -30,19 +32,15 @@ class Player(Base):
     last_name = Column(String)
     team_id = Column(Integer, ForeignKey("team.id"))
     position_id = Column(Integer, ForeignKey("position.id"))
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
     position = relationship("Position", backref="player")
     team = relationship("Team", backref="player")
 
-class Source(Base):
+class Source(TimestampMixin, Base):
     __tablename__ = 'source'
 
     id = Column(Integer, primary_key=True)
     url = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
     # when creating a new source, save the source and allow content to be accessed.
     def __init__(self, url):
@@ -56,7 +54,7 @@ class Source(Base):
 
     # save file to local machine for history and safer access
     def download(self):
-        urllib.urlretrieve (self.url, self.filename)
+        urllib.urlretrieve(self.url, self.filename)
 
     # allow access to content of the downloaded file
     def content(self):
@@ -66,25 +64,21 @@ class Source(Base):
 
         return soup
 
-class PlayerSource(Base):
+class PlayerSource(TimestampMixin, Base):
     __tablename__ = 'player_source'
 
     player_source_id = Column(Integer, primary_key=True)
     source_id = Column(Integer, ForeignKey("source.id"))
     player_id = Column(Integer, ForeignKey("player.id"))
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
-class Position(Base):
+class Position(TimestampMixin, Base):
     __tablename__ = 'position'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     abbr = Column(String)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
-class StatsYearBatting(Base):
+class StatsYearBatting(TimestampMixin, Base):
     __tablename__ = 'stats_year_batting'
 
     id = Column(Integer, primary_key=True)
@@ -120,8 +114,6 @@ class StatsYearBatting(Base):
     ops = Column(Float)
     go_ao = Column(Float)
     woba = Column(Float)
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
 
     # create relationship so when querying stats you have access to player info as well
     player = relationship("Player", backref="stats_year_batting")
