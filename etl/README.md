@@ -3,13 +3,18 @@ This solution works best when using [Docker](https://www.docker.com/)
 
 There are two components:
 * Python3 app that scrapes a given tabular html url which contains 2014 batting leaders.
-  * Uses sqlalchemy ORM to store player, team, position and yearly stats.
+  * Uses sqlalchemy ORM to access player, team, position and yearly stats.
   * Uses alembic to track database migrations
   * Uses beautifulsoup to parse the html
   * Uses urllib to download the file.
    * **Python2 issue**: urllib is the only component which restricts backwards compatibility to Python2. If you need to run with Python2, please modify the [model.py](model.py) file.
     * Import `urllib` instead of `urllib.request`.
     * Change the ```urllib.request.urlretrieve(self.url, self.filename)``` call in the `download` method to ```urllib.urlretrieve(self.url, self.filename)```)
+* Postgres DB to contain player, team, position and yearly stats
+
+Docker commands:
+* `docker-compose build`
+* `docker-compose run web`
 
 * Please `pip install` the necessary requirements from [requirements.txt](requirements.txt)
 * Run `python etl.py` you will create, seed and load the in-memory db.
