@@ -9,7 +9,6 @@ import load
 import model
 import output
 import schema
-import seed
 import stats
 
 from sqlalchemy import create_engine, orm
@@ -25,10 +24,6 @@ schema.metadata.create_all()
 sm = orm.sessionmaker(bind=engine, autoflush=True, autocommit=False,
     expire_on_commit=True)
 session = orm.scoped_session(sm)
-
-# seed db
-seed.team(session)
-seed.position(session)
 
 # load db
 batting_leaders = load.source(session, 'https://raw.githubusercontent.com/kruser/interview-developer/master/python/leaderboard.html')
