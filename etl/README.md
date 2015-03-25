@@ -12,21 +12,31 @@ There are two components:
     * Change the ```urllib.request.urlretrieve(self.url, self.filename)``` call in the `download` method to ```urllib.urlretrieve(self.url, self.filename)```)
 * Postgres DB to contain player, team, position and yearly stats
 
-Docker commands:
-* `docker-compose build`
-* `docker-compose run web`
+## Docker Instructions
+1. `docker-compose build` : Build docker container for pythong app
+2. `docker-compose run web` : Run migrations to setup db
+3. `docker-compose run web python etl.py` : Run script to generate top 50 wOBA
 
+## Non-Docker instructions
 * Please `pip install` the necessary requirements from [requirements.txt](requirements.txt)
-* Run `python etl.py` you will create, seed and load the in-memory db.
+* Setup a postgres db.
+ * change etl.py and alembic.ini to match new db information
+* Run `alembic upgrade head` to migrate and seed db
+* Run `python etl.py` to load information from the 2014 leaders HTML
 * A file named `'source_'+self.created_at.strftime("%m-%d-%y_%H:%M:%S")+'.html'` will be created to keep a history of what information was used for the import.
 * You will also receive an output of the top 50 mlb avg leaders ranked by their their 2014 [wOBA](http://www.fangraphs.com/library/offense/woba/)
 
-* **Docker**: There is now a [Dockerfile](Dockerfile) which will allow you to run `docker build -t etl .` and `docker run -i etl`.
+## Error Handling
+Currently there is no error handling as we have clean data and a fresh db. But some initial thoughts about issues that could arise:
+* Players with same first initial and last name
+* Missing fields (do you do a parital import)
+* Matching existing players to new data
+* Players that played partial seasons with different teams
+* General corrupt data (strings instead of ints, malformed html)
 
-## TODO
-* Version control db and information. Run migrations to easily revert improper loads.
-* Error Handling
-* Tests
+## Tests
+Currently there are no tests. The majority of the work is setting up the db schema.
+Should put unit tests around the stats file and especially wOBA.
 
 # Initial Problem is below
 

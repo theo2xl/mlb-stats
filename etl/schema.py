@@ -25,20 +25,20 @@ player_source = Table('player_source', metadata,
 )
 
 position = Table('position', metadata,
-    Column('id', Integer, Sequence('player_seq_id', optional=True), primary_key=True),
+    Column('id', Integer, Sequence('position_seq_id', optional=True), primary_key=True),
     Column('name', String(30), nullable=False),
     Column('abbr', String(2), nullable=False),
     Column('created_at', DateTime, default=now)
 )
 
 source = Table('source', metadata,
-    Column('id', Integer, Sequence('player_seq_id', optional=True), primary_key=True),
+    Column('id', Integer, Sequence('source_seq_id', optional=True), primary_key=True),
     Column('url', String(255), nullable=False),
     Column('created_at', DateTime, default=now)
 )
 
 stats_year_batting = Table('stats_year_batting', metadata,
-    Column('id', Integer, Sequence('team_seq_id', optional=True), primary_key=True),
+    Column('id', Integer, Sequence('stats_year_batting_seq_id', optional=True), primary_key=True),
     Column('player_id', Integer, ForeignKey('player.id')),
     Column('year', Integer),
     Column('g', Integer),

@@ -30,11 +30,9 @@ def upgrade():
         sa.Column('name', sa.String(30), nullable=False),
         sa.Column('abbr', sa.String(3), nullable=False),
         sa.Column('league', sa.String(2), nullable=False),
-        sa.Column('created_at', sa.DateTime, default=datetime.datetime.utcnow())
-    )
+        sa.Column('created_at', sa.DateTime, default=datetime.datetime.utcnow()))
 
-    op.bulk_insert(
-    team,
+    op.bulk_insert(team,
     [
         {'location': 'Baltimore', 'name': 'Orioles', 'abbr': 'BAL', 'league': 'AL'},
         {'location': 'Boston', 'name': 'Red Sox', 'abbr': 'BOS', 'league': 'AL'},
@@ -69,4 +67,4 @@ def upgrade():
     ])
 
 def downgrade():
-    drop_table('team')
+    op.drop_table('team')

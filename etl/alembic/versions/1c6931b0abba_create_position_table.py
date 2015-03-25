@@ -18,14 +18,12 @@ import sqlalchemy as sa
 
 def upgrade():
     position = op.create_table('position',
-        sa.Column('id', sa.Integer, sa.Sequence('player_seq_id', optional=True), primary_key=True),
+        sa.Column('id', sa.Integer, sa.Sequence('position_seq_id', optional=True), primary_key=True),
         sa.Column('name', sa.String(30), nullable=False),
         sa.Column('abbr', sa.String(2), nullable=False),
-        sa.Column('created_at', sa.DateTime, default=datetime.datetime.utcnow())
-    )
+        sa.Column('created_at', sa.DateTime, default=datetime.datetime.utcnow()))
 
-    op.bulk_insert(
-    position,
+    op.bulk_insert(position,
     [
         {'id':1, 'name':'Pitcher', 'abbr':'P'},
         {'id':2, 'name':'Catcher', 'abbr':'C'},
@@ -40,4 +38,4 @@ def upgrade():
     ])
 
 def downgrade():
-    drop_table('position')
+    op.drop_table('position')

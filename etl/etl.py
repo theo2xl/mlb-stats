@@ -13,12 +13,9 @@ import stats
 
 from sqlalchemy import create_engine, orm
 
-# Create an engine and create all the tables we need
-# This is currently done with a sqlite in memory db.
-# Just need to replace line 31 with real db
-engine = create_engine('postgresql+psycopg2://postgres:postgres@db', echo=False)
+# Create an engine for our postgres db
+engine = create_engine('postgresql+psycopg2://postgres:postgres@database', echo=False)
 schema.metadata.bind = engine
-schema.metadata.create_all()
 
 # Set up the session
 sm = orm.sessionmaker(bind=engine, autoflush=True, autocommit=False,
