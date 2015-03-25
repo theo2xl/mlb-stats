@@ -1,0 +1,14 @@
+database:
+  image: postgres:9.4
+  environment:
+    - USER=postgres
+    - PASS=postgres
+    - DB=postgres
+  ports:
+    - "5432"
+web:
+  build: .
+  volumes:
+    - .:/etl
+  links:
+    - database

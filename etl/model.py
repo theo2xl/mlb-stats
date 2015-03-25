@@ -2,7 +2,7 @@
 # Use ORM for easier access to objects
 # Could switch to a star schema (data warehouse) model if needed for performance.
 import datetime
-import urllib
+import urllib.request
 
 from bs4 import BeautifulSoup
 from sqlalchemy import *
@@ -54,7 +54,7 @@ class Source(TimestampMixin, Base):
 
     # save file to local machine for history and safer access
     def download(self):
-        urllib.urlretrieve(self.url, self.filename)
+        urllib.request.urlretrieve(self.url, self.filename)
 
     # allow access to content of the downloaded file
     def content(self):
