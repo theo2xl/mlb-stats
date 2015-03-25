@@ -7,9 +7,9 @@ There are two components:
   * Uses alembic to track database migrations
   * Uses beautifulsoup to parse the html
   * Uses urllib to download the file.
-   * **Python2 issue**: urllib is the only component which restricts backwards compatibility to Python2. If you need to run with Python2, please modify the [model.py](model.py) file.
-    * Import `urllib` instead of `urllib.request`.
-    * Change the ```urllib.request.urlretrieve(self.url, self.filename)``` call in the `download` method to ```urllib.urlretrieve(self.url, self.filename)```)
+   * **Python2 issue**: urllib is the only package which restricts backwards compatibility to Python2. If you need to run with Python2, please modify the [model.py](model.py) file.
+     * Import `urllib` instead of `urllib.request`.
+     * Change the ```urllib.request.urlretrieve(self.url, self.filename)``` call in the `download` method to ```urllib.urlretrieve(self.url, self.filename)```)
 * Postgres DB to contain player, team, position and yearly stats
 
 ## Docker Instructions
