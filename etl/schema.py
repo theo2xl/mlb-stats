@@ -19,8 +19,8 @@ player = Table('player', metadata,
 
 player_source = Table('player_source', metadata,
     Column('player_source_id', Integer, primary_key=True),
-    Column('source_id', Integer, ForeignKey("source.id"), nullable=False),
-    Column('player_id', Integer, ForeignKey("player.id"), nullable=False),
+    Column('source_id', Integer, ForeignKey("source.id"), nullable=False, primary_key=True),
+    Column('player_id', Integer, ForeignKey("player.id"), nullable=False, primary_key=True),
     Column('created_at', DateTime, default=now)
 )
 

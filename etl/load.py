@@ -92,10 +92,10 @@ def batting_stats(session, year, content):
                       'ops': stats.ops(pdata['h'], pdata['bb'], pdata['hbp'],
                              pdata['ab'], total_bases, pdata['sf']),
                       'go_ao': stats.go_ao(pdata['go'], pdata['ao']),
-                      'woba': stats.woba_2014(pdata['bb'], pdata['ibb'], pdata['hbp'],
-                                              singles, pdata['dbl'], pdata['tpl'],
-                                              pdata['hr'], pdata['ab'], pdata['sf'])}
-
+                      'woba': stats.woba(year, pdata['bb'], pdata['ibb'],
+                                         pdata['hbp'], singles, pdata['dbl'],
+                                         pdata['tpl'], pdata['hr'], pdata['ab'],
+                                         pdata['sf'])}
 
         # merge two dictionaries for creation of new batting stats object
         new_batting_stats = pdata.copy()

@@ -24,8 +24,8 @@ def upgrade():
 
     player_source = op.create_table('player_source',
         sa.Column('player_source_id', sa.Integer, primary_key=True),
-        sa.Column('source_id', sa.Integer, sa.ForeignKey("source.id"), nullable=False),
-        sa.Column('player_id', sa.Integer, sa.ForeignKey("player.id"), nullable=False),
+        sa.Column('source_id', sa.Integer, sa.ForeignKey("source.id"), nullable=False, primary_key=True),
+        sa.Column('player_id', sa.Integer, sa.ForeignKey("player.id"), nullable=False, primary_key=True),
         sa.Column('created_at', sa.DateTime, default=datetime.datetime.utcnow()))
 
 def downgrade():

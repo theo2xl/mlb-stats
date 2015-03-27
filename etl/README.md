@@ -27,16 +27,16 @@ There are two components:
 * You will also receive an output of the top 50 mlb avg leaders ranked by their their 2014 [wOBA](http://www.fangraphs.com/library/offense/woba/)
 
 ## Error Handling
-Currently there is no error handling as we have clean data and a fresh db. But some initial thoughts about issues that could arise:
+Currently there is no error handling as we have clean data and a fresh db.
+Some initial thoughts about issues that could arise:
 * Players with same first initial and last name
-* Missing fields (do you do a parital import)
+* Missing fields (do you do a partial import)
 * Matching existing players to new data
 * Players that played partial seasons with different teams
 * General corrupt data (strings instead of ints, malformed html)
 
-## Tests
-Currently there are no tests. The majority of the work is setting up the db schema.
-Should put unit tests around the stats file and especially wOBA.
+## TODO
+Currently duplicate players and stats would be created if the script is run more than once.
 
 # Initial Problem is below
 
